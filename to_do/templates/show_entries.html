@@ -1,0 +1,31 @@
+<form id="is_done_update_form" action="/update_is_done" method=post>
+<UL>
+
+{% for entry in entries %}
+
+    <li>
+	{% if entry.is_done == 1 %}
+
+		<input type=checkbox name="checkbox" checked="checked" value=0 onClick="document.getElementById('is_done_update_form').submit();"> 
+		<strike> {{ entry['id'] }}	| {{ entry['item_content'] }} | {{ entry.is_done }}  </strike>
+		<input type=textbox name='id_of_entry' value="{{ entry['item_content'] }}"></input>
+
+	{% elif entry.is_done == 0 %}
+
+		<input type=checkbox name="checkbox"  value=1 onClick="document.getElementById('is_done_update_form').submit();"> 
+
+		{{ entry['id'] }}	| {{ entry['item_content'] }} | {{ entry.is_done }}  
+		<input type=textbox name='id_of_entry' value="{{ entry['item_content'] }}"></input>
+
+		{{ entry.item_content }}{{ entry.is_done }} 
+	{% endif %}
+{% endfor %}
+</UL>
+</form>
+
+<form action="/add" method=post>
+	<p>{{ url_for('add_entry') }}</p>
+	<input type=text size=30 name=item_content>
+	<input type=text size=30 name=is_done>
+	<input type=submit> 
+</form>
