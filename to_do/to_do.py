@@ -49,7 +49,7 @@ def initdb_command():
 @app.route('/')
 def show_entries():
 	db = get_db()
-	cur = db.execute('select item_content, is_done from entries order by id desc')
+	cur = db.execute('select task_id,item_content, is_done from entries order by task_id desc')
 	entries = cur.fetchall()
 	return render_template('show_entries.html', entries = entries)
 
@@ -62,14 +62,29 @@ def add_entry():
 	return redirect(url_for('show_entries'))
 
 
-@app.route('/update_is_done', methods = ['POST'])
-def update_status():
+@app.route('/done/<int:task_id>/<int:is_done>')
+def update_status(task_id,is_done):
 	db = get_db()
-	id_from_form = request.form['id_of_entry']
-	new_value = int(request.form['checkbox'])
-	
-	logging.warning("the request is :", request.form['checkbox'])
-	db.execute('update entries set (is_done) = (?) where item_content=?',[new_value , id_from_form])
+	logging.warning('task_id : ',task_id)	
+	logging.warning('is_done : ',is_done)	
+
+	if is_done == 0:
+		is_done = 1
+	else: 
+		is_done = 0
+
+	new_value = is_done
+
+	db.execute('update entries set (is_done) = (?) where task_id=?',[new_value , task_id])
+
 	db.commit()
 	flash('update successful')
+	return redirect(url_for('show_entries'))
+
+@app.route('/delete/<int:task_id>')
+def delete_task(task_id):
+	db = get_db()
+	
+	db.execute('delete from entries where task_id = ?',[task_id])
+	db.commit()
 	return redirect(url_for('show_entries'))
