@@ -5,6 +5,7 @@ import logging
 
 app = Flask(__name__)
 app.config.from_object(__name__)  # loading config from this same file, to_do.py
+ # Load default config and override config from an environment variable
 app.config.update(dict(
 	DATABASE = os.path.join(app.root_path, 'to_do.db'),
 	SECRET_KEY = 'development key',
@@ -56,7 +57,7 @@ def show_entries():
 @app.route('/add', methods = ['POST'])
 def add_entry():
 	db = get_db()
-	db.execute('insert into entries (item_content, is_done) values (?, ?)', [request.form['item_content'], request.form['is_done']])
+	db.execute('insert into entries (item_content, is_done) values (?, ?)', [request.form['item_content'], 0])
 	db.commit()
 	flash('New entry was successfully posted')
 	return redirect(url_for('show_entries'))

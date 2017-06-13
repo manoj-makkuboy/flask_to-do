@@ -7,19 +7,19 @@
 
 		<strike>{{ entry['item_content'] }}  </strike>
 
-	{% elif entry.is_done == 0 %}
+	{% else  %}
 
-
-		{{ entry.item_content }}{{ entry.is_done }} 
+		{{ entry.item_content }} 
 	{% endif %}
+
 	<a href='/done/{{ entry.task_id }}/{{ entry.is_done }}'>Done</a>
 	<a href='/delete/{{ entry.task_id }}'>Delete</a>
+
 {% endfor %}
 </UL>
 
 <form action="/add" method=post>
-	<p>{{ url_for('add_entry') }}</p>
+	<h2>Add Item</h2>
 	<input type=text size=30 name=item_content>
-	<input type=text size=30 name=is_done>
 	<input type=submit> 
 </form>
