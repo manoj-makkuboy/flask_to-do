@@ -1,0 +1,73 @@
+<html>
+<script language='javascript' charset='UTF-8'>
+	var addItem = function(){	
+		itemToAdd = document.getElementById('newItem').value
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.open("POST", "http:localhost:5000/add");
+		xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+		jsonToSend = [itemToAdd, 0]	
+		xmlhttp.send(JSON.stringify(jsonToSend));  // Sends the response to server
+
+		node = document.createElement("LI");       // adding a copy to the html document
+		textNode = document.createTextNode(itemToAdd)
+		node.appendChild(textNode)
+		document.getElementById('toDoList').appendChild(node);	
+		document.getElementById('newItem').value = ''		// Clear the text in add text box
+		}
+	
+	var syncItem = function(){	
+		item_list = document.getElementById("toDoList");		
+		while(item_list.firstChild){
+			item_list.removeChild(item_list.firstChild)	
+		}
+		var xmlhttp = new XMLHttpRequest();
+	        xmlhttp.onreadystatechange = function () {
+			console.log(xmlhttp)
+			 if (xmlhttp.readyState === 4){
+				 JSONResponse = JSON.parse(xmlhttp.responseText)	
+				 console.log(JSONResponse)
+				 
+				 for (x = 0; x < JSONResponse.length; x++){
+					node = document.createElement("LI");
+
+					if(JSONResponse[x][2] == 1){
+
+						node.style.textDecoration = 'line-through';
+					}
+					textNode = document.createTextNode(JSONResponse[x][1])
+
+					
+     
+					 node.appendChild(textNode)
+					 document.getElementById('toDoList').appendChild(node);
+	
+
+				}
+				 			}
+	        }
+
+		xmlhttp.open("GET", "http:localhost:5000/sync");
+		xmlhttp.send(null)	
+	
+		}
+
+
+</script>
+
+<h2> To do items</h2>
+<UL id=toDoList>
+
+
+
+
+
+</UL>
+<input type=Button value=Sync name=syncButton id=syncButton onclick='syncItem()'>
+
+	<h2>Add Item</h2>
+	<input type=text size=30 name=item_content id=newItem>
+	<input type=Button value=AddButton name=addButton id=addButton onclick='addItem();'> 
+
+
+</html>
+
