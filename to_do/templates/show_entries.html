@@ -1,3 +1,15 @@
+<html>
+<script language='javascript'>
+	var addItem = function(){	
+		itemToAdd = document.getElementById('newItem').value
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.open("POST", "/add");
+		xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+		jsonToSend = [itemToAdd, 0]	
+		xmlhttp.send(JSON.stringify(jsonToSend));
+
+	}
+</script>
 <UL>
 
 {% for entry in entries %}
@@ -5,21 +17,20 @@
     <li>
 	{% if entry.is_done == 1 %}
 
-		<strike>{{ entry['item_content'] }}  </strike>
+		<strike>{{ entry }}  </strike>
 
-	{% elif entry.is_done == 0 %}
+	{% else  %}
 
-
-		{{ entry.item_content }}{{ entry.is_done }} 
+		{{ entry.item_content }} 
 	{% endif %}
+
 	<a href='/done/{{ entry.task_id }}/{{ entry.is_done }}'>Done</a>
 	<a href='/delete/{{ entry.task_id }}'>Delete</a>
+
 {% endfor %}
 </UL>
 
-<form action="/add" method=post>
-	<p>{{ url_for('add_entry') }}</p>
-	<input type=text size=30 name=item_content>
-	<input type=text size=30 name=is_done>
-	<input type=submit> 
-</form>
+	<h2>Add Item</h2>
+	<input type=text size=30 name=item_content id=newItem>
+	<input type=Button value=AddButton name=addButton id=addButton onclick='addItem();'> 
+</html

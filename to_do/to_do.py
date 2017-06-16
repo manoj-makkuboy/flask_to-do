@@ -1,10 +1,14 @@
 import os
+import sys
 import sqlite3
-from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
+from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, Response
 import logging
+import json
+
 
 app = Flask(__name__)
 app.config.from_object(__name__)  # loading config from this same file, to_do.py
+ # Load default config and override config from an environment variable
 app.config.update(dict(
 	DATABASE = os.path.join(app.root_path, 'to_do.db'),
 	SECRET_KEY = 'development key',
@@ -46,17 +50,23 @@ def initdb_command():
 	init_db()
 	print('Initialized the database.')
 
-@app.route('/')
+@app.route('/sync', methods = ['GET'])
 def show_entries():
 	db = get_db()
-	cur = db.execute('select task_id,item_content, is_done from entries order by task_id desc')
+	cur = db.execute('select task_id,item_content, is_done from entries order by task_id asc')
 	entries = cur.fetchall()
-	return render_template('show_entries.html', entries = entries)
+	json_array = []
+	for entry in entries:
+		json_array.append([x for x in entry])
+	print(Response, file=sys.stderr)
+	return Response(json.dumps(json_array), mimetype='json/application') 
+#	return Response('test response')	
 
 @app.route('/add', methods = ['POST'])
 def add_entry():
+	recievedJSON = request.json
 	db = get_db()
-	db.execute('insert into entries (item_content, is_done) values (?, ?)', [request.form['item_content'], request.form['is_done']])
+	db.execute('insert into entries (item_content, is_done) values (?, ?)', [recievedJSON[0], recievedJSON[1]])
 	db.commit()
 	flash('New entry was successfully posted')
 	return redirect(url_for('show_entries'))
