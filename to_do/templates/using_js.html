@@ -14,7 +14,21 @@
 		document.getElementById('toDoList').appendChild(node);	
 		document.getElementById('newItem').value = ''		// Clear the text in add text box
 		}
-	
+		
+	var doUnDo = function(listItem){
+		taskID = listItem.id
+		taskDone = 0
+		if (listItem.style['text-decoration-line'] === 'line-through')
+			taskDone = 1	
+		
+		console.log(taskID,taskDone)
+		payload = [taskID, taskDone]	
+		xmlhttp = new XMLHttpRequest();
+		xmlhttp.open("POST", "http:localhost:5000/done");
+		xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+		xmlhttp.send(JSON.stringify(payload));
+	}
+
 	var syncItem = function(){	
 		item_list = document.getElementById("toDoList");		
 		while(item_list.firstChild){
@@ -22,28 +36,34 @@
 		}
 		var xmlhttp = new XMLHttpRequest();
 	        xmlhttp.onreadystatechange = function () {
-			console.log(xmlhttp)
 			 if (xmlhttp.readyState === 4){
 				 JSONResponse = JSON.parse(xmlhttp.responseText)	
-				 console.log(JSONResponse)
 				 
 				 for (x = 0; x < JSONResponse.length; x++){
 					node = document.createElement("LI");
+					node.id = ( JSONResponse[x][0]) 
 
+					doneButton = document.createElement('Button');
+					doneButton.onclick = function(){
+						doUnDo(this.parentElement);};
+					
 					if(JSONResponse[x][2] == 1){
 
 						node.style.textDecoration = 'line-through';
+						doneButton.innerHTML = 'un Done'
 					}
-					textNode = document.createTextNode(JSONResponse[x][1])
+					else
+						doneButton.innerHTML = 'Done'
 
-					
+					textNode = document.createTextNode(JSONResponse[x][1]);
      
-					 node.appendChild(textNode)
+					 node.appendChild(textNode);
+					 node.appendChild(doneButton);
 					 document.getElementById('toDoList').appendChild(node);
 	
 
 				}
-				 			}
+				}
 	        }
 
 		xmlhttp.open("GET", "http:localhost:5000/sync");
@@ -56,8 +76,6 @@
 
 <h2> To do items</h2>
 <UL id=toDoList>
-
-
 
 
 
