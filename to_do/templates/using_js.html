@@ -1,11 +1,11 @@
 <html>
 <script language='javascript' charset='UTF-8'>
 	var addItem = function(){	
-		itemToAdd = document.getElementById('newItem').value
+		var itemToAdd = document.getElementById('newItem').value
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.open("POST", "http:localhost:5000/add");
 		xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-		jsonToSend = [itemToAdd, 0]	
+		var jsonToSend = [itemToAdd, 0]	
 		xmlhttp.send(JSON.stringify(jsonToSend));  // Sends the response to server
 
 		node = document.createElement("LI");       // adding a copy to the html document
@@ -16,17 +16,18 @@
 		}
 		
 	var doUnDo = function(listItem){
-		taskID = listItem.id
-		taskDone = 0
+		var taskID = listItem.id
+		var taskDone = 0
 		if (listItem.style['text-decoration-line'] === 'line-through')
 			taskDone = 1	
 		
 		console.log(taskID,taskDone)
-		payload = [taskID, taskDone]	
-		xmlhttp = new XMLHttpRequest();
+		var payload = [taskID, taskDone]	
+		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.open("POST", "http:localhost:5000/done");
 		xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 		xmlhttp.send(JSON.stringify(payload));
+		
 	}
 
 	var syncItem = function(){	
@@ -39,11 +40,11 @@
 			 if (xmlhttp.readyState === 4){
 				 JSONResponse = JSON.parse(xmlhttp.responseText)	
 				 
-				 for (x = 0; x < JSONResponse.length; x++){
-					node = document.createElement("LI");
+				 for (var x = 0; x < JSONResponse.length; x++){
+					var node = document.createElement("LI");
 					node.id = ( JSONResponse[x][0]) 
 
-					doneButton = document.createElement('Button');
+					var doneButton = document.createElement('Button');
 					doneButton.onclick = function(){
 						doUnDo(this.parentElement);};
 					
@@ -55,7 +56,7 @@
 					else
 						doneButton.innerHTML = 'Done'
 
-					textNode = document.createTextNode(JSONResponse[x][1]);
+					 var textNode = document.createTextNode(JSONResponse[x][1]);
      
 					 node.appendChild(textNode);
 					 node.appendChild(doneButton);

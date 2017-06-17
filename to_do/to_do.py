@@ -59,7 +59,7 @@ def show_entries():
     for entry in entries:
         json_array.append([x for x in entry])
     print(Response, file=sys.stderr)
-    return Response(json.dumps(json_array), mimetype='json/application') 
+    return Response(json.dumps(json_array), mimetype='json/application')
 
 @app.route('/add', methods = ['POST'])
 def add_entry():
@@ -75,26 +75,25 @@ def add_entry():
 def update_status():
     recievedJSON = request.json
     db = get_db()
-    
+
     is_done = recievedJSON[1]
     task_id = recievedJSON[0]
     if is_done == 0:
         is_done = 1
-    else: 
+    else:
         is_done = 0
 
     new_value = is_done
-    print(recievedJSON, file=sys.stderr)
-    db.execute('update entries set (is_done) = (?) where task_id=?',[is_done, task_id])
+    db.execute('update entries set is_done = ? where task_id=?',[is_done, task_id])
 
     db.commit()
     flash('update successful')
-    return Response('')
+    return ''
 
 @app.route('/delete/<int:task_id>')
 def delete_task(task_id):
     db = get_db()
-    
+
     db.execute('delete from entries where task_id = ?',[task_id])
     db.commit()
     return redirect(url_for('show_entries'))
