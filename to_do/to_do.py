@@ -88,7 +88,7 @@ def update_status():
 
     db.commit()
     flash('update successful')
-    return ''
+    return show_entries()   # sends Response() the entire JSON from serverside
 
 @app.route('/delete/<int:task_id>')
 def delete_task(task_id):

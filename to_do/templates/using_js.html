@@ -27,50 +27,61 @@
 		xmlhttp.open("POST", "http:localhost:5000/done");
 		xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 		xmlhttp.send(JSON.stringify(payload));
-		
+
+		xmlhttp.onreadystatechange = function () {
+			 if (xmlhttp.readyState === 4){
+				 buildList(JSON.parse(xmlhttp.responseText));
+			}
+	        }
 	}
 
 	var syncItem = function(){	
-		item_list = document.getElementById("toDoList");		
-		while(item_list.firstChild){
-			item_list.removeChild(item_list.firstChild)	
-		}
+		
 		var xmlhttp = new XMLHttpRequest();
 	        xmlhttp.onreadystatechange = function () {
 			 if (xmlhttp.readyState === 4){
-				 JSONResponse = JSON.parse(xmlhttp.responseText)	
-				 
-				 for (var x = 0; x < JSONResponse.length; x++){
-					var node = document.createElement("LI");
-					node.id = ( JSONResponse[x][0]) 
-
-					var doneButton = document.createElement('Button');
-					doneButton.onclick = function(){
-						doUnDo(this.parentElement);};
-					
-					if(JSONResponse[x][2] == 1){
-
-						node.style.textDecoration = 'line-through';
-						doneButton.innerHTML = 'un Done'
-					}
-					else
-						doneButton.innerHTML = 'Done'
-
-					 var textNode = document.createTextNode(JSONResponse[x][1]);
-     
-					 node.appendChild(textNode);
-					 node.appendChild(doneButton);
-					 document.getElementById('toDoList').appendChild(node);
-	
-
-				}
-				}
+				 buildList(JSON.parse(xmlhttp.responseText));
+			}
 	        }
 
 		xmlhttp.open("GET", "http:localhost:5000/sync");
 		xmlhttp.send(null)	
 	
 		}
+		
+	buildList = function(JSONResponse){
+		console.log(JSONResponse,"hey this is buildList")	
+
+		item_list = document.getElementById("toDoList");		
+			while(item_list.firstChild){
+				item_list.removeChild(item_list.firstChild)	
+			}
+
+			for (var x = 0; x < JSONResponse.length; x++){
+				var node = document.createElement("LI");
+				node.id = ( JSONResponse[x][0]) 
+
+				var doneButton = document.createElement('Button');
+				doneButton.onclick = function(){
+					doUnDo(this.parentElement);};
+				
+				if(JSONResponse[x][2] == 1){
+
+					node.style.textDecoration = 'line-through';
+					doneButton.innerHTML = 'un Done'
+				}
+				else
+					doneButton.innerHTML = 'Done'
+
+					var textNode = document.createTextNode(JSONResponse[x][1]);
+
+					node.appendChild(textNode);
+					node.appendChild(doneButton);
+					document.getElementById('toDoList').appendChild(node);
+
+
+			}
+	}
 
 
 </script>
