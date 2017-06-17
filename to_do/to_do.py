@@ -90,10 +90,11 @@ def update_status():
     flash('update successful')
     return show_entries()   # sends Response() the entire JSON from serverside
 
-@app.route('/delete/<int:task_id>')
-def delete_task(task_id):
-    db = get_db()
+@app.route('/delete', methods = ['POST'])
+def delete_task():
+    task_id = request.json
 
+    db = get_db()
     db.execute('delete from entries where task_id = ?',[task_id])
     db.commit()
-    return redirect(url_for('show_entries'))
+    return show_entries()

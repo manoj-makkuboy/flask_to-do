@@ -1,5 +1,6 @@
 <html>
 <script language='javascript' charset='UTF-8'>
+
 	var addItem = function(){	
 		var itemToAdd = document.getElementById('newItem').value
 		var xmlhttp = new XMLHttpRequest();
@@ -15,6 +16,20 @@
 		document.getElementById('newItem').value = ''		// Clear the text in add text box
 		}
 		
+	var deleteTask = function(listItem){
+		var taskID = listItem.id;
+		var payLoad = taskID;
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.open("POST", "http:localhost:5000/delete");
+		xmlhttp.setRequestHeader("Content-type", "application/json;charset=UTF-8");
+		xmlhttp.send(JSON.stringify(payLoad));
+
+		xmlhttp.onreadystatechange = function() {
+			if (xmlhttp.readyState == 4){
+				buildList(JSON.parse(xmlhttp.responseText));
+			}
+		}
+	}
 	var doUnDo = function(listItem){
 		var taskID = listItem.id
 		var taskDone = 0
@@ -39,6 +54,7 @@
 		
 		var xmlhttp = new XMLHttpRequest();
 	        xmlhttp.onreadystatechange = function () {
+
 			 if (xmlhttp.readyState === 4){
 				 buildList(JSON.parse(xmlhttp.responseText));
 			}
@@ -59,9 +75,9 @@
 
 			for (var x = 0; x < JSONResponse.length; x++){
 				var node = document.createElement("LI");
-				node.id = ( JSONResponse[x][0]) 
+				node.id = ( JSONResponse[x][0] ) 
 
-				var doneButton = document.createElement('Button');
+				var doneButton = document.createElement('Button'); // done button
 				doneButton.onclick = function(){
 					doUnDo(this.parentElement);};
 				
@@ -78,7 +94,15 @@
 					node.appendChild(textNode);
 					node.appendChild(doneButton);
 					document.getElementById('toDoList').appendChild(node);
-
+									
+									// delete button
+				var deleteButton = document.createElement('Button'); 
+				deleteButton.onclick = function(){
+					deleteTask(this.parentElement);};
+				
+				
+					deleteButton.innerHTML = 'Delete'
+					node.appendChild(deleteButton);
 
 			}
 	}
