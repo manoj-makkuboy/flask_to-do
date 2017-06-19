@@ -1,50 +1,57 @@
 <html>
 <script language='javascript' charset='UTF-8'>
 
+	var XHR = function(action, method, payLoad){
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.open(method, action);
+		xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+		xmlhttp.send(JSON.stringify(payLoad));
+		return xmlhttp
+	}
+
 	var addItem = function(){	
 		var itemToAdd = document.getElementById('newItem').value
-		var xmlhttp = new XMLHttpRequest();
-		xmlhttp.open("POST", "http:localhost:5000/add");
-		xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-		var jsonToSend = [itemToAdd, 0]	
-		xmlhttp.send(JSON.stringify(jsonToSend));  // Sends the response to server
+
+		var xmlhttp = XHR("http:localhost:5000/add", "POST", [itemToAdd, 0]);
 
 		node = document.createElement("LI");       // adding a copy to the html document
 		textNode = document.createTextNode(itemToAdd)
 		node.appendChild(textNode)
 		document.getElementById('toDoList').appendChild(node);	
 		document.getElementById('newItem').value = ''		// Clear the text in add text box
+
+		xmlhttp.onreadystatechange = function () {
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
+				buildList(JSON.parse(xmlhttp.responseText));
+				}
+			}
 		}
 		
 	var deleteTask = function(listItem){
-		var taskID = listItem.id;
-		var payLoad = taskID;
-		var xmlhttp = new XMLHttpRequest();
-		xmlhttp.open("POST", "http:localhost:5000/delete");
-		xmlhttp.setRequestHeader("Content-type", "application/json;charset=UTF-8");
-		xmlhttp.send(JSON.stringify(payLoad));
+		var payLoad = listItem.id;
+		
+		var xmlhttp = XHR("http:localhost:5000/delete", "POST", payLoad);
 
 		xmlhttp.onreadystatechange = function() {
-			if (xmlhttp.readyState == 4){
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
 				buildList(JSON.parse(xmlhttp.responseText));
 			}
 		}
 	}
+
 	var doUnDo = function(listItem){
 		var taskID = listItem.id
 		var taskDone = 0
+
 		if (listItem.style['text-decoration-line'] === 'line-through')
 			taskDone = 1	
 		
 		console.log(taskID,taskDone)
-		var payload = [taskID, taskDone]	
-		var xmlhttp = new XMLHttpRequest();
-		xmlhttp.open("POST", "http:localhost:5000/done");
-		xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-		xmlhttp.send(JSON.stringify(payload));
+		var payLoad = [taskID, taskDone];	
+		var xmlhttp = XHR("http:localhost:5000/done", "POST", payLoad);
 
 		xmlhttp.onreadystatechange = function () {
-			 if (xmlhttp.readyState === 4){
+			 if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
 				 buildList(JSON.parse(xmlhttp.responseText));
 			}
 	        }
@@ -52,7 +59,8 @@
 
 	var syncItem = function(){	
 		
-		var xmlhttp = new XMLHttpRequest();
+		xmlhttp = XHR("http:localhost:5000/sync", "GET", null);
+
 	        xmlhttp.onreadystatechange = function () {
 
 			 if (xmlhttp.readyState === 4){
@@ -60,8 +68,6 @@
 			}
 	        }
 
-		xmlhttp.open("GET", "http:localhost:5000/sync");
-		xmlhttp.send(null)	
 	
 		}
 		
@@ -110,18 +116,20 @@
 
 </script>
 
+<body onload='syncItem()'>
+
 <h2> To do items</h2>
-<UL id=toDoList>
+<UL id=toDoList >
 
 
 
 </UL>
-<input type=Button value=Sync name=syncButton id=syncButton onclick='syncItem()'>
+
 
 	<h2>Add Item</h2>
 	<input type=text size=30 name=item_content id=newItem>
 	<input type=Button value=AddButton name=addButton id=addButton onclick='addItem();'> 
-
+</body>
 
 </html>
 
